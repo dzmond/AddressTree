@@ -1,34 +1,111 @@
+# AddressTree
+Essentially a directory for crypto addresses. Users can create an account, add their crypto addresses and keep a contact list of other users addresses. Users addresses are also accessible via api endpoint `/api/[username goes here]` (for instance, `/api/elon` would yield a JSON object with all the addresses that user `elon` )
+
+You can view a user at `/[username]` for instance `/elon` is for user `elon`
+
+Once logged in, you can view/add addresses in the home page
+
+This app requires you to log in with a Google account.
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+  
 
 ## Getting Started
 
-First, run the development server:
+  
+
+First, run the setup script:
+
+  
 
 ```bash
-npm run dev
+
+npm run setup
+
 # or
+
+yarn setup
+
+```
+Then, run the development server:
+
+  
+
+```bash
+
+npm run dev
+
+# or
+
 yarn dev
+
+```
+Upon starting, you will be prompted to enter the "magic word", which decrypts the needed variables and places them into your `Process.env`
+
+  
+
+```bash
+
+AddressTree
+AddressTree
+AddressTree
+AddressTree
+AddressTree
+What's the magic word?: 
+
+```
+Note: the app will continue to compile successfully, however it will crash without typing in the magic word and pressing enter
+  
+
+Once the magic word is entered and the app compiles successfully, open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+  
+
+## Some Caveats
+
+  - This version uses a local JSON-based db called StormDB. I did this so that whoever is reviewing the code can check the database to see the data, how it's managed, etc if need be. This also means all data is lost whenever the project is deleted. To view the database file, view `db.stormdb` located in the root of the project directory.
+
+- There is currently a runtime error that occurs arbitrarily when loading `/[user]` pages.
+	```
+	# Unhandled Runtime Error
+
+	TypeError: Cannot read property 'following' of undefined
+	```
+	If you're lucky enough to see this error, just refresh the page and keep doing so 		until it disappears. I left this in since it's a frontend react issue and thankfully the this challenge stresses the backend aspects of the full stack
+- You may repeatedly see a warning stating `useUser: TypeError: Only absolute URLs are supported`. This was left in because the issue was hard to replicate and thus fix. All in all, it doesn't affect the apps functions at all and a fix will be done eventually.
+
+
+
+
+  
+
+## Your  .env
+
+  In this repository is an encrypted .env (`.env.enc`) file containing important credentials needed for the app to function.
+
+If for whatever reason you'd like to create a .env with your own credentials, copy and paste the following code into a file called `.env`
+```
+NEXTAUTH_URL=http://localhost:3000
+REACT_APP_URL=http://localhost:3000
+GOOGLE_CLIENT_ID= {YOUR CLIENT ID}
+GOOGLE_CLIENT_SECRET= {YOUR CLIENT SECRET}
+
+```
+  Afterwards, you'll need to encrypt the file for the app to use these new credentials. To do so, run:
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+npm run encrypt-env
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+```
+Upon running this script, it will ask you to pick a magic word to use when decrypting.
+```
+What's gonna be the magic word playa?:
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+ Enter any word of your choosing and hit enter.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+## Any questions? comments? concerns?
+The best ways to contact me are via [email](mailto:desmondadonle@gmail.com) or via discord (dzmnd#7155).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.

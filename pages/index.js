@@ -1,63 +1,114 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import {signIn, signOut, useSession} from 'next-auth/client'
+import useUser from '../hooks/useUser'
+import useFollow from '../hooks/useFollow'
 
-export default function Home() {
+export default function Home({error}) {
+  const [session, loading] = useSession()
+  const {user, getUser} = useUser()
+  const {follow} = useFollow()
+
+  const addCrypto = async event => {
+    event.preventDefault() // don't redirect the page
+
+    const res = await fetch(
+      `/api/crypto/add`,
+      {
+        body: JSON.stringify({
+          id: session.user.id,
+          ticker: event.target.ticker.value,
+          address: event.target.address.value
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        method: 'POST'
+      }
+    ).then(()=>{
+      getUser()
+    })
+  };
+
+  // If loading, try to retrieve a user to trigger a rerender and try again
+
+  if (loading) {
+    getUser();
+    return <p>Loading...</p>;
+  } 
+
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
+        <title> AddressTree </title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
+        {error && (
+          <p style={{
+            color: 'red'
+          }}>{error}</p>
+        )}
+        
+        {/* if logged in */ }
+        
+        {!session && (
+          <>
+          <h1 className={styles.title}> AddressTree </h1>
+            <p className={styles.description}>
+              Create or join a group to finally decide on a what to do with your homies or that special someone.
             </p>
-          </a>
-        </div>
+            {/*  Auth Button */ }
+            <button onClick={signIn}>Sign In</button>
+          </>
+        )}
+
+        {session && (
+          <> 
+            <p>
+              Logged in as {user?.username || getUser()}<br/>
+            </p>
+            <button onClick={signOut}>Sign Out</button><br/>
+            <div>
+              <h4>Cryptos</h4>
+              <ul>
+              {
+                  user?.crypto.map((c) => {
+                    return <li key={c.ticker}> {c.ticker} : {c.address} </li>
+                  }) || getUser()
+                }
+              </ul>
+              <form onSubmit={addCrypto}>
+                <label>Add Crypto </label>
+                <input id="ticker" type="text" autoComplete="ticker" placeholder="ticker" required />
+                <input id="address" type="text" autoComplete="address" placeholder="address" required />
+                <button type="submit">Add</button>
+              </form>
+              
+              <h4>Following</h4>
+                <ul>
+                {
+                  user?.following.map((f) => {
+                    return (<li key={f.id}> {f.username}  
+                            <button onClick={()=>{follow(f.id, f.username, getUser)}}>unfollow</button>
+                          </li>)
+                  }) || getUser()
+                }
+              </ul>
+
+            </div>
+          </>
+        )}
       </main>
 
       <footer className={styles.footer}>
         <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+          href="https://twitter.com/dzmndo"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
+          &copy;{' '}des 2021
         </a>
       </footer>
     </div>

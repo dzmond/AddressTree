@@ -5,11 +5,18 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "setup": "npm install && node util/db.js",
+    "encrypt-env": "node setup_env.js"
   },
   "dependencies": {
+    "cookie": "^0.4.1",
     "next": "10.0.9",
+    "next-auth": "^3.13.2",
+    "node-jose": "^2.0.0",
     "react": "17.0.1",
-    "react-dom": "17.0.1"
+    "react-dom": "17.0.1",
+    "secure-env": "^1.2.0",
+    "stormdb": "^0.4.1"
   }
 }
